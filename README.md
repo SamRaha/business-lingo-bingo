@@ -1,1 +1,0 @@
-# business-lingo-bingo
