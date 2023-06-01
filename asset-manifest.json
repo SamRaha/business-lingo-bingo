@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/business-lingo-bingo/static/css/main.974d660c.css",
+    "main.js": "/business-lingo-bingo/static/js/main.7b571630.js",
+    "static/js/787.1c8a13fd.chunk.js": "/business-lingo-bingo/static/js/787.1c8a13fd.chunk.js",
+    "index.html": "/business-lingo-bingo/index.html",
+    "main.974d660c.css.map": "/business-lingo-bingo/static/css/main.974d660c.css.map",
+    "main.7b571630.js.map": "/business-lingo-bingo/static/js/main.7b571630.js.map",
+    "787.1c8a13fd.chunk.js.map": "/business-lingo-bingo/static/js/787.1c8a13fd.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.974d660c.css",
+    "static/js/main.7b571630.js"
+  ]
+}
