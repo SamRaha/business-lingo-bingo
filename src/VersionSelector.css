@@ -1,0 +1,51 @@
+.version-selector {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.browse-versions-button {
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, #4ecdc4 0%, #45b7d1 100%);
+    border: none;
+    border-radius: 50px;
+    font-size: clamp(0.9rem, 2vw, 1rem);
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 auto;
+    min-width: 200px;
+    justify-content: center;
+}
+
+.browse-versions-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(78, 205, 196, 0.3);
+    background: linear-gradient(135deg, #45b7d1 0%, #4ecdc4 100%);
+}
+
+.browse-versions-button:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .browse-versions-button {
+        padding: 0.8rem 1.5rem;
+        font-size: 0.9rem;
+        min-width: 180px;
+    }
+}
+
+@media (max-width: 480px) {
+    .browse-versions-button {
+        padding: 0.7rem 1.2rem;
+        font-size: 0.85rem;
+        min-width: 160px;
+    }
+}
