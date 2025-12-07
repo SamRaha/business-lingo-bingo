@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from "react";
-import "./CardCreator.css";
-import "./firebase-styles.css";
-import { FirebaseService } from "./firebase/firebaseService";
+import React, { useState, useEffect } from 'react';
+import './CardCreator.css';
+import './firebase-styles.css';
+import { FirebaseService } from './firebase/firebaseService';
 
 function CardCreator({ setCurrentView, onCardSaved }) {
-    const [cardName, setCardName] = useState("");
-    const [phrases, setPhrases] = useState(Array(24).fill(""));
+    const [cardName, setCardName] = useState('');
+    const [phrases, setPhrases] = useState(Array(24).fill(''));
     const [isSaving, setIsSaving] = useState(false);
-    const [category, setCategory] = useState("custom");
-    const [error, setError] = useState("");
+    const [category, setCategory] = useState('custom');
+    const [error, setError] = useState('');
 
     const handlePhraseChange = (index, value) => {
         const newPhrases = [...phrases];
@@ -18,27 +18,27 @@ function CardCreator({ setCurrentView, onCardSaved }) {
 
     const handleSave = async () => {
         if (!cardName.trim()) {
-            setError("Please enter a name for your bingo card!");
+            setError('Please enter a name for your bingo card!');
             return;
         }
 
-        const emptyPhrases = phrases.filter((phrase) => !phrase.trim()).length;
+        const emptyPhrases = phrases.filter(phrase => !phrase.trim()).length;
         if (emptyPhrases > 0) {
-            setError(`Please fill in all 24 phrases! You have ${emptyPhrases} empty phrase${emptyPhrases > 1 ? "s" : ""} remaining.`);
+            setError(`Please fill in all 24 phrases! You have ${emptyPhrases} empty phrase${emptyPhrases > 1 ? 's' : ''} remaining.`);
             return;
         }
 
         setIsSaving(true);
-        setError("");
+        setError('');
 
         try {
             // Create new card data
             const cardData = {
                 name: cardName.trim(),
-                phrases: phrases.map((phrase) => phrase.trim()),
+                phrases: phrases.map(phrase => phrase.trim()),
                 isDefault: true,
                 isPublic: true, // All cards are public
-                category: category,
+                category: category
             };
 
             // Save to Firebase
@@ -46,19 +46,19 @@ function CardCreator({ setCurrentView, onCardSaved }) {
 
             // Notify parent component
             onCardSaved(savedCard);
-            setCurrentView("play");
+            setCurrentView('play');
         } catch (error) {
-            console.error("Error saving card:", error);
-            setError(error.message || "Failed to save card. Please try again.");
+            console.error('Error saving card:', error);
+            setError(error.message || 'Failed to save card. Please try again.');
         } finally {
             setIsSaving(false);
         }
     };
 
     const handleClear = () => {
-        if (window.confirm("Are you sure you want to clear all fields?")) {
-            setCardName("");
-            setPhrases(Array(24).fill(""));
+        if (window.confirm('Are you sure you want to clear all fields?')) {
+            setCardName('');
+            setPhrases(Array(24).fill(''));
         }
     };
 
@@ -85,13 +85,32 @@ function CardCreator({ setCurrentView, onCardSaved }) {
             <div className="card-options">
                 <div className="option-group">
                     <label htmlFor="category">Category:</label>
-                    <select id="category" value={category} onChange={(e) => setCategory(e.target.value)} className="category-select">
+                    <select
+                        id="category"
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                        className="category-select"
+                    >
                         <option value="business">Business</option>
                         <option value="tech">Technology</option>
                         <option value="education">Education</option>
                         <option value="healthcare">Healthcare</option>
                         <option value="custom">Custom</option>
                     </select>
+                </div>
+
+                <div className="option-group">
+                    <label className="checkbox-label">
+                        <input
+                            type="checkbox"
+                            checked={true}
+                            disabled={true}
+                            className="public-checkbox"
+                        />
+                        <span className="checkbox-text">
+                            🌍 All cards are shared with the community!
+                        </span>
+                    </label>
                 </div>
             </div>
 
@@ -119,17 +138,27 @@ function CardCreator({ setCurrentView, onCardSaved }) {
             )}
 
             <div className="creator-actions">
-                <button onClick={handleClear} className="action-button clear-button" disabled={isSaving}>
+                <button
+                    onClick={handleClear}
+                    className="action-button clear-button"
+                    disabled={isSaving}
+                >
                     🗑️ Clear All
                 </button>
-                <button onClick={handleSave} disabled={isSaving || !cardName.trim() || phrases.some((phrase) => !phrase.trim())} className="action-button save-button">
+                <button
+                    onClick={handleSave}
+                    disabled={isSaving || !cardName.trim() || phrases.some(phrase => !phrase.trim())}
+                    className="action-button save-button"
+                >
                     {isSaving ? (
                         <>
                             <span className="spinner"></span>
                             Saving to Cloud...
                         </>
                     ) : (
-                        <>🌍 Save & Share</>
+                        <>
+                            🌍 Save & Share
+                        </>
                     )}
                 </button>
             </div>
