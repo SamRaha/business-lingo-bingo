@@ -1,0 +1,19 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow users to read and write their own custom bingo cards
+    match /customBingoCards/{cardId} {
+      // Allow anyone to create new cards (anonymous usage)
+      allow create: if true;
+
+      // Allow reading public cards or cards created by the same user
+      allow read: if resource.data.isPublic == true ||
+                     resource.data.createdBy == request.headers['x-user-id'] ||
+                     resource.data.createdBy == request.query.userId;
+
+      // Allow updating/deleting only cards created by the same user
+      allow update, delete: if resource.data.createdBy == request.headers['x-user-id'] ||
+                               resource.data.createdBy == request.query.userId;
+    }
+  }
+}
