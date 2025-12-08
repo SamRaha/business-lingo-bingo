@@ -10,6 +10,7 @@ function CardCreator({ setCurrentView, onCardSaved }) {
     const [category, setCategory] = useState("custom");
     const [error, setError] = useState("");
     const [duplicateIndices, setDuplicateIndices] = useState(new Set());
+    const [shareUrl, setShareUrl] = useState("");
 
     // Function to find duplicate indices
     const findDuplicates = (phrasesArray) => {
@@ -83,6 +84,12 @@ function CardCreator({ setCurrentView, onCardSaved }) {
 
             // Notify parent component
             onCardSaved(savedCard);
+
+            // Show share URL
+            const newShareUrl = `${window.location.origin}${window.location.pathname}#/play/${savedCard.id}`;
+            setShareUrl(newShareUrl);
+            console.log('Share your bingo card:', newShareUrl);
+
             setCurrentView("play");
         } catch (error) {
             console.error("Error saving card:", error);
@@ -97,6 +104,29 @@ function CardCreator({ setCurrentView, onCardSaved }) {
             setCardName("");
             setPhrases(Array(24).fill(""));
             setDuplicateIndices(new Set());
+            setShareUrl("");
+        }
+    };
+
+    const copyToClipboard = async () => {
+        try {
+            await navigator.clipboard.writeText(shareUrl);
+            alert("Share link copied to clipboard!");
+        } catch (err) {
+            console.error("Failed to copy:", err);
+            // Fallback for older browsers
+            const textArea = document.createElement("textarea");
+            textArea.value = shareUrl;
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand("copy");
+                alert("Share link copied to clipboard!");
+            } catch (fallbackErr) {
+                console.error("Fallback copy failed:", fallbackErr);
+            }
+            document.body.removeChild(textArea);
         }
     };
 
@@ -158,6 +188,28 @@ function CardCreator({ setCurrentView, onCardSaved }) {
                 <div className="error-message">
                     <span className="error-icon">⚠️</span>
                     {error}
+                </div>
+            )}
+
+            {shareUrl && (
+                <div className="share-url-section">
+                    <h3>🎉 Card Created Successfully!</h3>
+                    <p>Share this link with others to let them play your bingo card:</p>
+                    <div className="share-url-container">
+                        <input
+                            type="text"
+                            value={shareUrl}
+                            readOnly
+                            className="share-url-input"
+                        />
+                        <button
+                            onClick={copyToClipboard}
+                            className="copy-button"
+                            type="button"
+                        >
+                            📋 Copy Link
+                        </button>
+                    </div>
                 </div>
             )}
 

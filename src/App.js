@@ -166,6 +166,7 @@ function App() {
     const [selectedVersion, setSelectedVersion] = useState('default');
     const [currentPhrases, setCurrentPhrases] = useState(defaultPhrases);
     const [currentCardName, setCurrentCardName] = useState('Business Lingo Bingo');
+    const [defaultCard, setDefaultCard] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [showConfetti, setShowConfetti] = useState(false);
@@ -175,6 +176,74 @@ function App() {
         setShowConfetti(false);
     }, [currentView]);
 
+    // Handle URL routing for direct card links
+    useEffect(() => {
+        const handleHashChange = () => {
+            const hash = window.location.hash;
+            const match = hash.match(/#\/play\/(.+)/);
+
+            if (match) {
+                const cardId = match[1];
+                loadCardById(cardId);
+                setCurrentView('play');
+            } else if (hash === '#/browse') {
+                setCurrentView('browse');
+            } else if (hash === '#/create') {
+                setCurrentView('create');
+            } else if (hash === '#/' || hash === '') {
+                setCurrentView('play');
+            }
+        };
+
+        // Handle initial page load
+        handleHashChange();
+
+        // Listen for hash changes
+        window.addEventListener('hashchange', handleHashChange);
+
+        return () => {
+            window.removeEventListener('hashchange', handleHashChange);
+        };
+    }, []);
+
+    // Function to load a specific card by ID
+    const loadCardById = async (cardId) => {
+        try {
+            setIsLoading(true);
+            const card = await FirebaseService.getCardById(cardId);
+
+            if (card) {
+                // Add to custom cards if not already there
+                setCustomCards(prev => {
+                    const exists = prev.find(c => c.id === card.id);
+                    if (!exists) {
+                        return [card, ...prev];
+                    }
+                    return prev;
+                });
+
+                // Set as current card
+                setSelectedVersion(card.id.toString());
+                setCurrentPhrases(card.phrases);
+                setCurrentCardName(card.name);
+            } else {
+                setError('Card not found. Loading default card instead.');
+                // Fallback to default
+                setSelectedVersion('default');
+                setCurrentPhrases(defaultPhrases);
+                setCurrentCardName('Business Lingo Bingo');
+            }
+        } catch (error) {
+            console.error('Error loading card by ID:', error);
+            setError('Failed to load card. Using default instead.');
+            setSelectedVersion('default');
+            setCurrentPhrases(defaultPhrases);
+            setCurrentCardName('Business Lingo Bingo');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     // Load custom cards from Firebase on component mount
     useEffect(() => {
         const loadCards = async () => {
@@ -182,6 +251,10 @@ function App() {
             setError('');
 
             try {
+                // First, ensure the default Business Lingo Bingo card exists in Firebase
+                const systemDefaultCard = await FirebaseService.ensureDefaultCard(defaultPhrases);
+                setDefaultCard(systemDefaultCard);
+
                 // Check if we need to migrate localStorage data
                 if (!FirebaseService.isDataMigrated()) {
                     const hasLocalData = localStorage.getItem('customBingoCards');
@@ -196,6 +269,11 @@ function App() {
                             setSelectedVersion(defaultCard.id.toString());
                             setCurrentPhrases(defaultCard.phrases);
                             setCurrentCardName(defaultCard.name);
+                        } else {
+                            // Use system default card
+                            setSelectedVersion(systemDefaultCard.id.toString());
+                            setCurrentPhrases(systemDefaultCard.phrases);
+                            setCurrentCardName(systemDefaultCard.name);
                         }
                         return;
                     }
@@ -205,12 +283,17 @@ function App() {
                 const userCards = await FirebaseService.getUserCards();
                 setCustomCards(userCards);
 
-                // Set default version to the most recent custom card if it exists
-                const defaultCard = userCards.find(card => card.isDefault) || userCards[0];
-                if (defaultCard) {
-                    setSelectedVersion(defaultCard.id.toString());
-                    setCurrentPhrases(defaultCard.phrases);
-                    setCurrentCardName(defaultCard.name);
+                // Set default version to the most recent custom card or system default
+                const userDefaultCard = userCards.find(card => card.isDefault) || userCards[0];
+                if (userDefaultCard) {
+                    setSelectedVersion(userDefaultCard.id.toString());
+                    setCurrentPhrases(userDefaultCard.phrases);
+                    setCurrentCardName(userDefaultCard.name);
+                } else {
+                    // Use system default card
+                    setSelectedVersion(systemDefaultCard.id.toString());
+                    setCurrentPhrases(systemDefaultCard.phrases);
+                    setCurrentCardName(systemDefaultCard.name);
                 }
             } catch (error) {
                 console.error('Error loading cards:', error);
@@ -235,11 +318,13 @@ function App() {
         if (versionId === 'default') {
             setCurrentPhrases(defaultPhrases);
             setCurrentCardName('Business Lingo Bingo');
+            window.location.hash = '#/';
         } else {
             const selectedCard = customCards.find(card => card.id.toString() === versionId);
             if (selectedCard) {
                 setCurrentPhrases(selectedCard.phrases);
                 setCurrentCardName(selectedCard.name);
+                window.location.hash = `#/play/${selectedCard.id}`;
             }
         }
     };
@@ -253,6 +338,7 @@ function App() {
             setSelectedVersion(newCard.id.toString());
             setCurrentPhrases(newCard.phrases);
             setCurrentCardName(newCard.name);
+            window.location.hash = `#/play/${newCard.id}`;
         } catch (error) {
             console.error('Error refreshing cards after save:', error);
             // Still update with the new card locally
@@ -260,6 +346,7 @@ function App() {
             setSelectedVersion(newCard.id.toString());
             setCurrentPhrases(newCard.phrases);
             setCurrentCardName(newCard.name);
+            window.location.hash = `#/play/${newCard.id}`;
         }
     };
 
@@ -276,7 +363,7 @@ function App() {
         setSelectedVersion(card.id.toString());
         setCurrentPhrases(card.phrases);
         setCurrentCardName(card.name);
-        setCurrentView('play'); // Switch to play view
+        window.location.hash = `#/play/${card.id}`; // This will trigger the hashchange handler
     };
 
     return (

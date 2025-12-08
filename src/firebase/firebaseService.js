@@ -1,6 +1,7 @@
 import {
   collection,
   doc,
+  getDoc,
   getDocs,
   addDoc,
   updateDoc,
@@ -84,6 +85,84 @@ export class FirebaseService {
     } catch (error) {
       console.error('Error fetching user cards:', error);
       throw new Error('Failed to load your cards. Please try again.');
+    }
+  }
+
+  // Get a specific card by ID
+  static async getCardById(cardId) {
+    try {
+      const cardRef = doc(db, COLLECTION_NAME, cardId);
+      const cardSnap = await getDoc(cardRef);
+
+      if (cardSnap.exists()) {
+        const cardData = cardSnap.data();
+        return {
+          id: cardSnap.id,
+          ...cardData,
+          createdAt: cardData.createdAt?.toDate?.() || new Date(),
+          lastModified: cardData.lastModified?.toDate?.() || new Date()
+        };
+      } else {
+        return null; // Card not found
+      }
+    } catch (error) {
+      console.error('Error fetching card by ID:', error);
+      throw new Error('Failed to load the requested card.');
+    }
+  }
+
+  // Create or get the default Business Lingo Bingo card
+  static async ensureDefaultCard(defaultPhrases) {
+    try {
+      // Check if default card already exists
+      const q = query(
+        collection(db, COLLECTION_NAME),
+        where('name', '==', 'Business Lingo Bingo'),
+        where('category', '==', 'business'),
+        where('isSystemDefault', '==', true)
+      );
+
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        // Default card exists, return the first one
+        const doc = querySnapshot.docs[0];
+        const cardData = doc.data();
+        return {
+          id: doc.id,
+          ...cardData,
+          createdAt: cardData.createdAt?.toDate?.() || new Date(),
+          lastModified: cardData.lastModified?.toDate?.() || new Date()
+        };
+      }
+
+      // Create the default card
+      const defaultCardData = {
+        name: 'Business Lingo Bingo',
+        phrases: defaultPhrases,
+        isDefault: true,
+        isPublic: true,
+        isSystemDefault: true, // Special flag for the default card
+        category: 'business',
+        createdBy: 'system',
+        createdAt: serverTimestamp(),
+        usageCount: 0,
+        lastModified: serverTimestamp()
+      };
+
+      const docRef = await addDoc(collection(db, COLLECTION_NAME), defaultCardData);
+
+      // Return the created card
+      return {
+        id: docRef.id,
+        ...defaultCardData,
+        createdAt: new Date(),
+        lastModified: new Date()
+      };
+
+    } catch (error) {
+      console.error('Error ensuring default card:', error);
+      throw new Error('Failed to create default card.');
     }
   }
 

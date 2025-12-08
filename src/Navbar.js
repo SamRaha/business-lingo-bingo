@@ -2,6 +2,14 @@ import React from 'react';
 import './Navbar.css';
 
 function Navbar({ currentView, setCurrentView }) {
+    const handleNavigation = (view) => {
+        if (view === 'play') {
+            window.location.hash = '#/';
+        } else {
+            window.location.hash = `#/${view}`;
+        }
+    };
+
     return (
         <nav className="navbar">
             <div className="navbar-brand">
@@ -10,21 +18,21 @@ function Navbar({ currentView, setCurrentView }) {
             <div className="navbar-menu">
                 <button
                     className={`navbar-button ${currentView === 'play' ? 'active' : ''}`}
-                    onClick={() => setCurrentView('play')}
+                    onClick={() => handleNavigation('play')}
                 >
                     <span className="button-icon">🎮</span>
                     Play
                 </button>
                 <button
                     className={`navbar-button ${currentView === 'browse' ? 'active' : ''}`}
-                    onClick={() => setCurrentView('browse')}
+                    onClick={() => handleNavigation('browse')}
                 >
                     <span className="button-icon">🌍</span>
                     Browse
                 </button>
                 <button
                     className={`navbar-button ${currentView === 'create' ? 'active' : ''}`}
-                    onClick={() => setCurrentView('create')}
+                    onClick={() => handleNavigation('create')}
                 >
                     <span className="button-icon">✨</span>
                     Create

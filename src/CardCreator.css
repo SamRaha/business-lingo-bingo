@@ -134,6 +134,64 @@
     font-weight: 600;
 }
 
+.share-url-section {
+    background: linear-gradient(135deg, #4ecdc4, #44a08d);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    color: white;
+    text-align: center;
+}
+
+.share-url-section h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.share-url-section p {
+    margin: 0 0 1rem 0;
+    opacity: 0.9;
+}
+
+.share-url-container {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.share-url-input {
+    flex: 1;
+    padding: 0.75rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-family: monospace;
+}
+
+.share-url-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.copy-button {
+    padding: 0.75rem 1.25rem;
+    background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.copy-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+}
+
 .creator-actions {
     display: flex;
     justify-content: center;
