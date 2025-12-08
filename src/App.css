@@ -279,7 +279,7 @@
 /* Large desktops */
 @media (min-width: 1200px) {
   .bingo-card {
-    max-width: 700px;
+    max-width: 650px;
     padding: 2.5rem;
   }
 
