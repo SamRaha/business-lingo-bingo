@@ -3,11 +3,11 @@
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem;
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(30, 30, 35, 0.95);
     backdrop-filter: blur(10px);
     border-radius: 20px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(70, 70, 80, 0.3);
     animation: slideIn 0.6s ease-out;
 }
 
@@ -19,17 +19,13 @@
 .browser-header h2 {
     font-size: clamp(1.8rem, 4vw, 2.5rem);
     font-weight: 800;
-    background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);
-    background-size: 300% 300%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: gradientShift 3s ease-in-out infinite;
+    color: #e0e0e0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     margin-bottom: 0.5rem;
 }
 
 .browser-header p {
-    color: #666;
+    color: #b0b0b0;
     font-size: clamp(1rem, 2vw, 1.2rem);
     margin: 0;
 }
@@ -42,7 +38,7 @@
     display: block;
     font-weight: 600;
     font-size: 1.1rem;
-    color: #333;
+    color: #e0e0e0;
     margin-bottom: 1rem;
 }
 
@@ -55,10 +51,10 @@
 
 .category-btn {
     padding: 0.5rem 1rem;
-    border: 2px solid #e9ecef;
+    border: 2px solid #4a4a50;
     border-radius: 20px;
-    background: white;
-    color: #666;
+    background: rgba(35, 35, 40, 0.9);
+    color: #b0b0b0;
     font-size: 0.9rem;
     font-weight: 500;
     cursor: pointer;
@@ -79,7 +75,7 @@
 .loading-container {
     text-align: center;
     padding: 3rem;
-    color: #666;
+    color: #b0b0b0;
 }
 
 .cards-grid {
@@ -90,11 +86,11 @@
 }
 
 .public-card {
-    background: white;
+    background: rgba(35, 35, 40, 0.9);
     border-radius: 12px;
     padding: 1.5rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    border: 2px solid #e9ecef;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border: 2px solid #4a4a50;
     transition: all 0.3s ease;
 }
 
@@ -115,7 +111,7 @@
     margin: 0;
     font-size: 1.2rem;
     font-weight: 700;
-    color: #333;
+    color: #e0e0e0;
     flex: 1;
 }
 
@@ -153,12 +149,12 @@
 }
 
 .phrase-chip {
-    background: #f8f9fa;
-    color: #666;
+    background: rgba(45, 45, 50, 0.9);
+    color: #b0b0b0;
     padding: 0.3rem 0.6rem;
     border-radius: 12px;
     font-size: 0.8rem;
-    border: 1px solid #e9ecef;
+    border: 1px solid #4a4a50;
 }
 
 .phrase-chip.more {
@@ -173,7 +169,7 @@
     align-items: center;
     margin-top: 1rem;
     padding-top: 1rem;
-    border-top: 1px solid #e9ecef;
+    border-top: 1px solid #4a4a50;
 }
 
 .card-meta small {
@@ -202,7 +198,7 @@
     grid-column: 1 / -1;
     text-align: center;
     padding: 3rem;
-    color: #666;
+    color: #b0b0b0;
 }
 
 .empty-state p {
@@ -216,7 +212,7 @@
     gap: 1rem;
     margin-top: 2rem;
     padding-top: 2rem;
-    border-top: 1px solid #e9ecef;
+    border-top: 1px solid #4a4a50;
 }
 
 .action-button {
@@ -244,9 +240,9 @@
 }
 
 .action-button.secondary {
-    background: linear-gradient(135deg, #ffffff, #f8f9fa);
-    color: #333;
-    border: 2px solid #e9ecef;
+    background: linear-gradient(135deg, #3a3a40, #2a2a30);
+    color: #e0e0e0;
+    border: 2px solid #4a4a50;
 }
 
 .action-button.secondary:hover {

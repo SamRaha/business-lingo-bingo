@@ -1,9 +1,13 @@
 /* Firebase integration styles */
 .card-options {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 1.5rem;
     margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: rgba(40, 40, 45, 0.8);
+    border-radius: 12px;
+    border: 1px solid #4a4a50;
 }
 
 .option-group {
@@ -14,16 +18,17 @@
 .option-group label {
     font-weight: 600;
     font-size: 1rem;
-    color: #333;
+    color: #e0e0e0;
     margin-bottom: 0.5rem;
 }
 
 .category-select {
     padding: 0.75rem;
-    border: 2px solid #e9ecef;
+    border: 2px solid #4a4a50;
     border-radius: 8px;
     font-size: 1rem;
-    background: white;
+    background: rgba(35, 35, 40, 0.9);
+    color: #e0e0e0;
     transition: all 0.3s ease;
 }
 

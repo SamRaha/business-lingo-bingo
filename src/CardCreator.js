@@ -9,11 +9,40 @@ function CardCreator({ setCurrentView, onCardSaved }) {
     const [isSaving, setIsSaving] = useState(false);
     const [category, setCategory] = useState("custom");
     const [error, setError] = useState("");
+    const [duplicateIndices, setDuplicateIndices] = useState(new Set());
+
+    // Function to find duplicate indices
+    const findDuplicates = (phrasesArray) => {
+        const trimmedPhrases = phrasesArray.map(phrase => phrase.trim().toLowerCase());
+        const duplicateSet = new Set();
+
+        for (let i = 0; i < trimmedPhrases.length; i++) {
+            if (trimmedPhrases[i] && trimmedPhrases[i] !== '') {
+                for (let j = i + 1; j < trimmedPhrases.length; j++) {
+                    if (trimmedPhrases[i] === trimmedPhrases[j]) {
+                        duplicateSet.add(i);
+                        duplicateSet.add(j);
+                    }
+                }
+            }
+        }
+
+        return duplicateSet;
+    };
 
     const handlePhraseChange = (index, value) => {
+        // Limit to 30 characters
+        if (value.length > 30) {
+            value = value.substring(0, 30);
+        }
+
         const newPhrases = [...phrases];
         newPhrases[index] = value;
         setPhrases(newPhrases);
+
+        // Update duplicate tracking
+        const duplicates = findDuplicates(newPhrases);
+        setDuplicateIndices(duplicates);
     };
 
     const handleSave = async () => {
@@ -22,9 +51,17 @@ function CardCreator({ setCurrentView, onCardSaved }) {
             return;
         }
 
-        const emptyPhrases = phrases.filter((phrase) => !phrase.trim()).length;
+        const trimmedPhrases = phrases.map((phrase) => phrase.trim());
+        const emptyPhrases = trimmedPhrases.filter((phrase) => !phrase).length;
         if (emptyPhrases > 0) {
             setError(`Please fill in all 24 phrases! You have ${emptyPhrases} empty phrase${emptyPhrases > 1 ? "s" : ""} remaining.`);
+            return;
+        }
+
+        // Check for duplicates
+        const duplicates = trimmedPhrases.filter((phrase, index) => trimmedPhrases.indexOf(phrase) !== index);
+        if (duplicates.length > 0) {
+            setError(`Duplicate phrases found! Please make sure all phrases are unique.`);
             return;
         }
 
@@ -59,6 +96,7 @@ function CardCreator({ setCurrentView, onCardSaved }) {
         if (window.confirm("Are you sure you want to clear all fields?")) {
             setCardName("");
             setPhrases(Array(24).fill(""));
+            setDuplicateIndices(new Set());
         }
     };
 
@@ -103,10 +141,15 @@ function CardCreator({ setCurrentView, onCardSaved }) {
                             value={phrase}
                             onChange={(e) => handlePhraseChange(index, e.target.value)}
                             placeholder={`Enter phrase ${index + 1}...`}
-                            className="phrase-input"
-                            maxLength={100}
+                            className={`phrase-input ${phrase.length === 30 ? 'at-limit' : ''} ${duplicateIndices.has(index) ? 'duplicate' : ''}`}
+                            maxLength={30}
                             rows={3}
                         />
+                        <div className="phrase-counter">
+                            {phrase.length}/30
+                            {phrase.length === 30 && <span className="limit-warning"> (max)</span>}
+                            {duplicateIndices.has(index) && <span className="duplicate-warning"> (duplicate)</span>}
+                        </div>
                     </div>
                 ))}
             </div>
