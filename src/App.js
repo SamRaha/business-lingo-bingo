@@ -63,7 +63,7 @@ const BingoCell = ({ phrase, pickedPhrases, onPickPhrase }) => (
 );
 
 // Bingo card component
-function BingoCard({ phrases = defaultPhrases, selectedVersion, onVersionChange, customCards, setCurrentView, currentCardName }) {
+function BingoCard({ phrases = defaultPhrases, selectedVersion, onVersionChange, customCards, setCurrentView, currentCardName, onWin }) {
     const initialPhrases = shuffle([...phrases]).slice(0, 24); // One less for the "FREE" cell.
     initialPhrases.splice(12, 0, "FREE"); // Insert "FREE" at the middle position.
     const [cardPhrases, setCardPhrases] = useState(initialPhrases);
@@ -75,7 +75,15 @@ function BingoCard({ phrases = defaultPhrases, selectedVersion, onVersionChange,
         newPhrases.splice(12, 0, "FREE");
         setCardPhrases(newPhrases);
         setPickedPhrases(["FREE"]); // Reset picked phrases
-    }, [phrases]);
+        if (onWin) onWin(false); // Reset win state
+    }, [phrases, onWin]);
+
+    // Check for wins when picked phrases change
+    useEffect(() => {
+        if (checkWin() && onWin) {
+            onWin(true);
+        }
+    }, [pickedPhrases, cardPhrases, onWin]);
 
     // Function to pick a phrase, using useCallback to prevent unnecessary re-renders
     const pickPhrase = useCallback(
@@ -93,7 +101,8 @@ function BingoCard({ phrases = defaultPhrases, selectedVersion, onVersionChange,
         newPhrases.splice(12, 0, "FREE");
         setCardPhrases(newPhrases);
         setPickedPhrases(["FREE"]);
-    }, [phrases]);
+        if (onWin) onWin(false); // Reset win state
+    }, [phrases, onWin]);
 
     // Checking winning condition
     function checkWin() {
@@ -136,18 +145,15 @@ function BingoCard({ phrases = defaultPhrases, selectedVersion, onVersionChange,
                 ))}
             </div>
             {checkWin() && (
-                <>
-                    <div className="win-message">
-                        <h2>Congratulations! You won Business Lingo Bingo!</h2>
-                        <button
-                            onClick={playAgain}
-                            className="play-again-button"
-                        >
-                            🎯 Play Again
-                        </button>
-                    </div>
-                    <Confetti width={window.innerWidth} height={window.innerHeight} />
-                </>
+                <div className="win-message">
+                    <h2>Congratulations! You won Business Lingo Bingo!</h2>
+                    <button
+                        onClick={playAgain}
+                        className="play-again-button"
+                    >
+                        🎯 Play Again
+                    </button>
+                </div>
             )}
         </div>
     );
@@ -162,6 +168,12 @@ function App() {
     const [currentCardName, setCurrentCardName] = useState('Business Lingo Bingo');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
+    const [showConfetti, setShowConfetti] = useState(false);
+
+    // Reset confetti when view changes
+    useEffect(() => {
+        setShowConfetti(false);
+    }, [currentView]);
 
     // Load custom cards from Firebase on component mount
     useEffect(() => {
@@ -218,6 +230,7 @@ function App() {
     // Handle version change
     const handleVersionChange = (versionId) => {
         setSelectedVersion(versionId);
+        setShowConfetti(false); // Reset confetti when changing versions
 
         if (versionId === 'default') {
             setCurrentPhrases(defaultPhrases);
@@ -270,6 +283,9 @@ function App() {
         <div className="app">
             <Navbar currentView={currentView} setCurrentView={setCurrentView} />
 
+            {/* Confetti at top level */}
+            {showConfetti && <Confetti />}
+
             {/* Loading overlay */}
             {isLoading && (
                 <div className="loading-overlay">
@@ -303,6 +319,7 @@ function App() {
                         customCards={customCards}
                         setCurrentView={setCurrentView}
                         currentCardName={currentCardName}
+                        onWin={setShowConfetti}
                     />
                 )}
                 {currentView === 'browse' && (

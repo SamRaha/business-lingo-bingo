@@ -9,9 +9,23 @@ function Confetti(props) {
         const ctx = canvas.getContext("2d");
         let animationFrameId;
 
-        // Set canvas dimensions
-        canvas.width = props.width;
-        canvas.height = props.height;
+        // Function to set canvas dimensions
+        const setCanvasSize = () => {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+        };
+
+        // Set initial canvas dimensions with a slight delay to ensure DOM is ready
+        setTimeout(setCanvasSize, 100);
+
+        // Handle window resize
+        const handleResize = () => {
+            setCanvasSize();
+        };
+
+        window.addEventListener('resize', handleResize);
 
         // Enhanced confetti colors with gradients
         const confettiColors = [
@@ -22,12 +36,26 @@ function Confetti(props) {
 
         const shapes = ['circle', 'square', 'triangle', 'star'];
         const particles = [];
-        const numParticles = 150; // More particles for flashy effect
+        const numParticles = 200; // Even more particles for full coverage
 
+        // Create particles with guaranteed full-width coverage
         for (let i = 0; i < numParticles; i++) {
+            // Force some particles to start on the left side
+            let x;
+            if (i < numParticles / 3) {
+                // First third: specifically spawn on left side
+                x = Math.random() * (window.innerWidth * 0.4);
+            } else if (i < (numParticles * 2) / 3) {
+                // Second third: center area
+                x = (window.innerWidth * 0.3) + Math.random() * (window.innerWidth * 0.4);
+            } else {
+                // Last third: right side
+                x = (window.innerWidth * 0.6) + Math.random() * (window.innerWidth * 0.4);
+            }
+
             particles.push({
-                x: Math.random() * canvas.width,
-                y: -Math.random() * canvas.height, // Start from above
+                x: x,
+                y: -Math.random() * window.innerHeight, // Start from above
                 vx: (Math.random() - 0.5) * 8,
                 vy: Math.random() * 3 + 2, // Falling down
                 color: confettiColors[Math.floor(Math.random() * confettiColors.length)],
@@ -87,7 +115,7 @@ function Confetti(props) {
 
         // Enhanced animation function
         function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
             particles.forEach((particle, index) => {
                 // Update position
@@ -104,14 +132,23 @@ function Confetti(props) {
                 particle.opacity = Math.max(0, particle.life);
 
                 // Bounce off sides
-                if (particle.x < 0 || particle.x > canvas.width) {
+                if (particle.x < 0 || particle.x > window.innerWidth) {
                     particle.vx = -particle.vx * 0.8;
-                    particle.x = Math.max(0, Math.min(canvas.width, particle.x));
+                    particle.x = Math.max(0, Math.min(window.innerWidth, particle.x));
                 }
 
                 // Reset particle when it falls off screen or fades out
-                if (particle.y > canvas.height + 50 || particle.opacity <= 0) {
-                    particle.x = Math.random() * canvas.width;
+                if (particle.y > window.innerHeight + 50 || particle.opacity <= 0) {
+                    // Ensure full-width respawn distribution
+                    const rand = Math.random();
+                    if (rand < 0.33) {
+                        particle.x = Math.random() * (window.innerWidth * 0.4); // Left third
+                    } else if (rand < 0.66) {
+                        particle.x = (window.innerWidth * 0.3) + Math.random() * (window.innerWidth * 0.4); // Center
+                    } else {
+                        particle.x = (window.innerWidth * 0.6) + Math.random() * (window.innerWidth * 0.4); // Right
+                    }
+
                     particle.y = -Math.random() * 100 - 50;
                     particle.vx = (Math.random() - 0.5) * 8;
                     particle.vy = Math.random() * 3 + 2;
@@ -131,11 +168,12 @@ function Confetti(props) {
         // Start animation
         animate();
 
-        // Cleanup function to stop animation
+        // Cleanup function to stop animation and remove event listener
         return () => {
             cancelAnimationFrame(animationFrameId);
+            window.removeEventListener('resize', handleResize);
         };
-    }, [props.width, props.height]);
+    }, []);
 
     return <canvas ref={canvasRef} className="confetti-canvas" />;
 }

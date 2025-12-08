@@ -7,6 +7,11 @@
     pointer-events: none;
     z-index: 9999;
     animation: confettiAppear 0.5s ease-out;
+    margin: 0;
+    padding: 0;
+    border: none;
+    display: block;
+    box-sizing: border-box;
 }
 
 @keyframes confettiAppear {
